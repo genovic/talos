@@ -25,8 +25,9 @@ include { ParseManeIntoJson } from './modules/annotation/ParseManeIntoJson/main'
 include { ReformatAnnotatedVcfIntoHailTable } from './modules/annotation/ReformatAnnotatedVcfIntoHailTable/main'
 include { TransferAnnotationsToMatrixTable } from './modules/annotation/TransferAnnotationsToMatrixTable/main'
 
-workflow {
+workflow ANNOTATION {
 
+	main:
     // populate ref genome input channel
     ch_ref_genome = channel.fromPath(
     	params.ref_genome,
@@ -144,8 +145,12 @@ workflow {
     )
 
     // combine the join-VCF and annotations as a HailTable
-    TransferAnnotationsToMatrixTable(
+    mt_path = TransferAnnotationsToMatrixTable(
         ReformatAnnotatedVcfIntoHailTable.out,
         ch_merged_tuple,
     )
+
+    emit:
+    mt_path // Emit the path output from the last process
+
 }

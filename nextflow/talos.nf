@@ -12,7 +12,11 @@ include { HPOFlagging } from './modules/talos/HPOFlagging/main'
 include { CreateTalosHTML } from './modules/talos/CreateTalosHTML/main'
 include { StartupChecks } from './modules/talos/StartupChecks/main'
 
-workflow {
+workflow TALOS {
+    take:
+    ch_mt
+
+    main:
     // existence of these files is necessary for starting the workflow
     // we open them as a channel, and pass the channel through to the method
     // pedigree_channel = channel.fromPath(params.pedigree)
@@ -23,7 +27,6 @@ workflow {
     ch_phenio = channel.fromPath(params.phenio_db, checkIfExists: true)
     ch_mane = channel.fromPath(params.parsed_mane, checkIfExists: true)
     ch_pedigree = channel.fromPath(params.pedigree, checkIfExists: true)
-    ch_mt = channel.fromPath(params.matrix_table, checkIfExists: true)
     ch_opt_ids = channel.fromPath(params.ext_id_map, checkIfExists: true)
     ch_seqr_ids = channel.fromPath(params.seqr_lookup, checkIfExists: true)
 

@@ -1,0 +1,48 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.10
+
+    commands:
+      # Use bash instead of sh
+      - ln -s -f /bin/bash /bin/sh
+
+      # bring in common env variables
+      - . $CODEBUILD_SRC_DIR_CI/vars.sh
+
+      # install utilities we want to use outside of our pipenv
+      - . $CODEBUILD_SRC_DIR_CI/funcs.sh; pip_install_local_executables
+
+  build:
+    commands:
+      # Enable bash features
+      - set +o posix -e
+
+      - . $CODEBUILD_SRC_DIR_CI/funcs.sh; start_success_message
+
+      - LOCAL_IMAGE_NAME=talos
+      - ECR_URL=${CODEBUILD_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}
+
+      # Login to the ECR
+      - aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR_URL}
+
+      # Build the image
+      - . $CODEBUILD_SRC_DIR_CI/funcs.sh; build_and_push_docker_image AWS ${ECR_URL} ${ECR_REPOSITORY_NAME} dev .
+
+      # Tag the new image according to tag/branch
+      # If we're building a git tag, then make that a docker tag, and also tag it with :latest
+      # If we're just building a branch, make that branch the docker tag, and don't update :latest (since this isn't a release)
+      - |
+        if [[ -n ${CODEBUILD_GIT_TAG} ]]; then
+          VERSION=${CODEBUILD_GIT_TAG}
+          . $CODEBUILD_SRC_DIR_CI/funcs.sh; update_tag_and_push_docker_image ${ECR_URL} ${LOCAL_IMAGE_NAME} dev latest
+        else
+          VERSION=${CODEBUILD_GIT_CLEAN_BRANCH}
+        fi
+
+        . $CODEBUILD_SRC_DIR_CI/funcs.sh; update_tag_and_push_docker_image ${ECR_URL} ${LOCAL_IMAGE_NAME} dev ${VERSION}
+
+    finally:
+      - . $CODEBUILD_SRC_DIR_CI/funcs.sh; check_and_send_success_message_or_fail_logs
