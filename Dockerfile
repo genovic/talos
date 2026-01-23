@@ -1,8 +1,6 @@
-FROM ghcr.io/astral-sh/uv:python3.10-bookworm-slim AS base
+FROM python:3.11-slim-bullseye AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
-
-ENV VERSION=8.3.4
 
 RUN apt update && apt install -y --no-install-recommends \
         apt-transport-https \
@@ -12,7 +10,7 @@ RUN apt update && apt install -y --no-install-recommends \
         libbz2-1.0 \
         libcurl4 \
         liblzma5 \
-        openjdk-17-jdk-headless \
+        openjdk-11-jdk-headless \
         procps \
         wget \
         zip \
@@ -55,6 +53,8 @@ RUN chmod +x /bin/echtvar
 
 FROM base_bcftools_echtvar AS talos
 
+COPY --from=ghcr.io/astral-sh/uv:0.9.26 /uv /uvx /bin/
+
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
 
@@ -70,10 +70,12 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev
 
 # Add in the additional requirements that are most likely to change.
-COPY LICENSE pyproject.toml uv.lock README.md .
+COPY LICENSE pyproject.toml uv.lock README.md ./
 COPY src src/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install ".[cpg]"
 
 # Place executables in the environment at the front of the path
 ENV PATH="/talos/.venv/bin:$PATH"
+
+ENV VERSION=8.3.8

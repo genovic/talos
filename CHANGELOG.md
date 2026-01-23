@@ -14,7 +14,38 @@ Suggested headings per release (as appropriate) are:
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[8.4.0] - 2025-11-27
+[8.3.8] - 2026-01-22
+
+### Changed
+
+* Jumps this codebase up to python 3.11, following a recent release of Hail 0.2.137
+* Docker base images. This is actually a regression to an earlier debian version (bullseye) to support the Hail requirement of Java==11
+* Further corrections to the de novo implementation, now confirmed tested on multiple test datasets
+
+
+[8.3.6] - 2026-01-16
+
+### Changed
+
+* De Novo detection algorithm altered. Now instead of fully executing in Hail (which has been error prone), the initial search is done in Hail, with secondary filtering (AB ratio, minimum alt depth) taking place later in python, where we can handle errors better.
+
+### Removed
+
+* strict_ad (padding single-entry AD arrays with 0)
+* genotype_only (subset of de novo search functionality only using genotypes)
+
+[8.3.5] - 2026-01-14
+
+### Changed
+
+* Talos now has a dependency on Mendelbrot, an external library which is acting as a common utilities collection for Talos and TalosAf
+* Uses the PedigreeParser from Mendelbrot, deletes the duplicated code and tests in this codebase
+
+### Added
+
+* Adds HGVS interpretation to the amino_acid_change field coming out of BCFtools CSQ
+
+[8.3.4] - 2025-11-27
 
 ### Fixed
 

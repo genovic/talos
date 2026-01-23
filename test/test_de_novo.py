@@ -1,8 +1,8 @@
 import pytest
+from mendelbrot.pedigree_parser import PedigreeParser
 
 import hail as hl
 
-from talos.pedigree_parser import PedigreeParser
 from talos.RunHailFiltering import annotate_category_de_novo
 
 
@@ -42,5 +42,6 @@ def test_dn_bch_one(make_a_bch_de_novo_mt, pedigree_path):
         ),
     )
 
-    with pytest.raises(hl.utils.java.HailUserError):
-        _dn_matrix = annotate_category_de_novo(dn_matrix, pedigree_data=PedigreeParser(pedigree_path))
+    dn_matrix = annotate_category_de_novo(dn_matrix, pedigree_data=PedigreeParser(pedigree_path))
+
+    assert dn_matrix.info.categorysampledenovo.collect() == ['male']
