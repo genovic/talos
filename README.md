@@ -1,3 +1,7 @@
+> [!NOTE]
+> Genomical's fork of the `populationgenomics/talos` repo. Our custom changes can be found on the `main` branch, and incoming changes can be synced to the `upstream-sync` branch to allow for selective upgrades.
+
+----
 # **Talos**
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
