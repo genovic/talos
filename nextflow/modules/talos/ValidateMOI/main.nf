@@ -2,9 +2,7 @@
 process ValidateMOI {
     container params.container
 
-
-    // process the labelled variants
-    publishDir params.output_dir, mode: 'copy'
+    publishDir params.cohort_output_dir, mode: 'copy'
 
     input:
         tuple path(labelled_vcf), path(labelled_vcf_index)
@@ -23,7 +21,7 @@ process ValidateMOI {
     """
     export TALOS_CONFIG=${talos_config}
 
-    ValidateMOI \
+    python -m talos.validate_moi \
         --labelled_vcf ${labelled_vcf} \
         --panelapp ${panelapp} \
         --pedigree ${pedigree} \
