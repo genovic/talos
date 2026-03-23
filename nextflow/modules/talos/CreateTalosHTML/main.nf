@@ -3,7 +3,7 @@ process CreateTalosHTML {
     container params.container
 
     // generate the HTML report
-    publishDir params.output_dir, mode: 'copy'
+    publishDir params.cohort_output_dir, mode: 'copy'
 
     input:
         path talos_result_json
@@ -23,7 +23,7 @@ process CreateTalosHTML {
     """
     export TALOS_CONFIG=${talos_config}
     mkdir ${params.cohort}_report
-    CreateTalosHTML \
+    python -m talos.create_talos_html \
         --input ${talos_result_json} \
         --panelapp ${panelapp_data} \
         --output ${params.cohort}_report.html $ext_id_arg $seqr_arg

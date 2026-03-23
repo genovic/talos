@@ -2,7 +2,7 @@
 process UnifiedPanelAppParser {
     container params.container
 
-    publishDir params.output_dir, mode: 'copy'
+    publishDir params.cohort_output_dir, mode: 'copy'
 
     input:
     	path talos_config
@@ -16,7 +16,7 @@ process UnifiedPanelAppParser {
 
     """
     export TALOS_CONFIG=${talos_config}
-    UnifiedPanelAppParser \
+    python -m talos.unified_panelapp_parser \
         --input $panelapp_cache \
         --output ${params.cohort}_panelapp.json \
         --pedigree $pedigree \

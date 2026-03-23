@@ -14,7 +14,102 @@ Suggested headings per release (as appropriate) are:
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[8.4.0] - 2025-11-27
+[9.0.3] - 2026-02-19
+
+This change includes a major* revision of the Nextflow implementation. Instead of 3 workflows each accessible through a standalone workflow file, this is now present as a top-level main.nf file, importing and executing sub-workflows. This was also used as an opportunity to merge all config files into a single file, harmonising variable/param names.
+
+Small updates to the expected reference data files (MANE & GFF3), though it is not anticipated this will cause large changes.
+
+### Added
+
+* Top-level `main.nf` and `preparation.nf` workflow files.
+  * `preparation.nf` contains all the data munging steps to turn raw downloads into Talos-ready annotation sources.
+  * `main.nf` encapsulates the Annotation and Talos sub-workflows, either as a unified workflow, or using the `TALOS_ONLY` entry.
+* `nextflow.config` - a single config file for all Nextflow usage
+
+### Removed
+
+* 3 separate `.config` files for the discrete NF workflows, now consolidated into a single file
+
+### Changed
+
+* The links for downloading MANE (1.4 -> 1.5) and Ensembl GFF (115 -> 116) have been updated. No major change expected.
+
+[9.0.1] - 2026-02-05
+
+### Added
+
+* re-adds the merge-from-single-sample-VCFs entrypoint
+  - single-sample VCF route leads into manual VCF sharding
+
+[9.0.0] - 2026-01-29
+
+### Changed
+
+The whole annotation pipeline has been changed (see PR #634). In brief:
+
+- instead of operating on the input data in one chunk, we allow for sharded input, or split single inputs
+- annotation is applied to each VCF fragment in parallel
+- candidate NF resourcing is applied to each stage
+- AlphaMissense results are annotated using echtvar instead of a Hail Table join
+- Data is loaded into a MatrixTable once per shard
+- Talos workflow can operate on one or more MTs, so no obligation to coalesce data
+
+Arguments:
+
+- some workflow arguments have been renamed, e.g. `cohort_output_dir` -> `output_dir`
+- `--matrix_table` has been removed, now the Talos workflow will find all `*.mt`s in the `output_dir` as input
+- I've tried to be more explicit that output/intermediate folders should be stored outside of this repository, so as not to block git updates.
+
+### Removed
+
+* all VCF merging steps - this workflow now requires a single VCF, or sharded VCFs representing a single callset
+
+[8.4.0] - 2026-01-27
+
+### Removed
+
+* ClinvArbitration data is no longer sourced from Zenodo
+
+### Added
+
+* A preparation workflow, used to download raw ClinVar data and generate annotation sources. Also downloads PanelApp.
+
+### Changed
+
+* The workflow now requires/expects a data dump to exist representing the current month's ClinVar/PanelApp content. If absent, the workflow will quit, and will request you run the prep workflow first.
+
+[8.3.8] - 2026-01-22
+
+### Changed
+
+* Jumps this codebase up to python 3.11, following a recent release of Hail 0.2.137
+* Docker base images. This is actually a regression to an earlier debian version (bullseye) to support the Hail requirement of Java==11
+* Further corrections to the de novo implementation, now confirmed tested on multiple test datasets
+
+[8.3.6] - 2026-01-16
+
+### Changed
+
+* De Novo detection algorithm altered. Now instead of fully executing in Hail (which has been error prone), the initial search is done in Hail, with secondary filtering (AB ratio, minimum alt depth) taking place later in python, where we can handle errors better.
+
+### Removed
+
+* strict_ad (padding single-entry AD arrays with 0)
+* genotype_only (subset of de novo search functionality only using genotypes)
+
+[8.3.5] - 2026-01-14
+
+### Changed
+
+* Talos now has a dependency on Mendelbrot, an external library which is acting as a common utilities collection for Talos and TalosAf
+* Uses the PedigreeParser from Mendelbrot, deletes the duplicated code and tests in this codebase
+
+### Added
+
+* Adds HGVS interpretation to the amino_acid_change field coming out of BCFtools CSQ
+
+[8.3.4] - 2025-11-27
 
 ### Fixed
 

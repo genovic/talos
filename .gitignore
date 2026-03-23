@@ -97,8 +97,10 @@ dmypy.json
 #nextflow
 .nextflow/
 .nextflow.log*
-nextflow/*_outputs/
-nextflow/processed_annotations/
+*_outputs
+processed_annotations*
 work/
 large_files/
+!large_files/README.md
+!large_files/gather_file.sh
 report-*

@@ -127,23 +127,27 @@ else
 fi
 
 # MANE gene data
-start_download https://ftp.ncbi.nlm.nih.gov/refseq/MANE/MANE_human/release_1.4/MANE.GRCh38.v1.4.summary.txt.gz
+start_download https://ftp.ncbi.nlm.nih.gov/refseq/MANE/MANE_human/release_1.5/MANE.GRCh38.v1.5.summary.txt.gz
 
 # Ensembl GFF3 data
-start_download https://ftp.ensembl.org/pub/release-115/gff3/homo_sapiens/Homo_sapiens.GRCh38.115.gff3.gz
+start_download https://ftp.ensembl.org/pub/release-116/vertebrates/gff3/homo_sapiens/Homo_sapiens.GRCh38.116.chr.gff3.gz
 
 # Jax lab file for phenotype matching
-start_download https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-05-06/hp.obo
+start_download https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2026-02-16/hp.obo
 
-start_download https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2025-05-06/genes_to_phenotype.txt
-
-# latest clinvarbitration data
-CLINVAR="clinvarbitration.tar.gz"
-start_download https://zenodo.org/records/17862713/files/ClinvArbitration_Dec_2025_clinvar_decisions.release.tar.gz?download=1 "${CLINVAR}"
+start_download https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2026-02-16/genes_to_phenotype.txt
 
 # AlphaMissense raw data
 AM="AlphaMissense_hg38.tsv.gz"
 start_download "https://zenodo.org/records/8208688/files/AlphaMissense_hg38.tsv.gz?download=1" "${AM}"
+
+THIS_MONTH=$(date '+%Y-%m')
+
+submission_summary="https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/submission_summary.txt.gz"
+variant_summary="https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz"
+
+start_download $submission_summary "submissions_${THIS_MONTH}.txt.gz"
+start_download $variant_summary "variants_${THIS_MONTH}.txt.gz"
 
 await
 
