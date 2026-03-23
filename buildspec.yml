@@ -22,7 +22,6 @@ phases:
 
       - . $CODEBUILD_SRC_DIR_CI/funcs.sh; start_success_message
 
-      - LOCAL_IMAGE_NAME=talos
       - ECR_URL=${CODEBUILD_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}
 
       # Login to the ECR
@@ -37,12 +36,12 @@ phases:
       - |
         if [[ -n ${CODEBUILD_GIT_TAG} ]]; then
           VERSION=${CODEBUILD_GIT_TAG}
-          . $CODEBUILD_SRC_DIR_CI/funcs.sh; update_tag_and_push_docker_image ${ECR_URL} ${LOCAL_IMAGE_NAME} dev latest
+          . $CODEBUILD_SRC_DIR_CI/funcs.sh; update_tag_and_push_docker_image ${ECR_URL} ${ECR_REPOSITORY_NAME} dev latest
         else
           VERSION=${CODEBUILD_GIT_CLEAN_BRANCH}
         fi
 
-        . $CODEBUILD_SRC_DIR_CI/funcs.sh; update_tag_and_push_docker_image ${ECR_URL} ${LOCAL_IMAGE_NAME} dev ${VERSION}
+        . $CODEBUILD_SRC_DIR_CI/funcs.sh; update_tag_and_push_docker_image ${ECR_URL} ${ECR_REPOSITORY_NAME} dev ${VERSION}
 
     finally:
       - . $CODEBUILD_SRC_DIR_CI/funcs.sh; check_and_send_success_message_or_fail_logs
